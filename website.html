@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSOHGRAM</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#010408;color:#e8f4ff;font-family:'Courier New',monospace;overflow-x:hidden}
+
+/* ── Video background layer ── */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.env{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
+.env.on{opacity:1}
+#e0{background:radial-gradient(ellipse at 50% 60%,#0d2038 0%,#061428 35%,#030c18 60%,#010408 100%)}
+#e1{background:radial-gradient(ellipse at 50% 55%,#3a1c08 0%,#220e04 30%,#120602 60%,#050200 100%)}
+#e2{background:radial-gradient(ellipse at 50% 65%,#0a2244 0%,#051428 35%,#020810 65%,#010206 100%)}
+#e3{background:radial-gradient(ellipse at 50% 50%,#030820 0%,#010510 40%,#000208 100%)}
+
+/*
+  ══════════════════════════════════════════════════════════
+  TO ADD REAL VIDEO BACKGROUNDS:
+  1. Get 4 video files (mountains.mp4, desert.mp4, ocean.mp4, night.mp4)
+     Free HD footage: pexels.com/videos  or  pixabay.com/videos
+  2. Place them in the same folder as this HTML file
+  3. Uncomment the <video> tags in the HTML below
+  ══════════════════════════════════════════════════════════
+*/
+
+#c{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* scanlines */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);z-index:4;pointer-events:none}
+
+/* HUD */
+.htl,.hbr{position:fixed;width:52px;height:52px;z-index:5;pointer-events:none}
+.htl{top:16px;left:16px;border-top:1px solid rgba(100,200,255,.3);border-left:1px solid rgba(100,200,255,.3)}
+.hbr{bottom:16px;right:16px;border-bottom:1px solid rgba(100,200,255,.3);border-right:1px solid rgba(100,200,255,.3)}
+.hlbl{position:fixed;top:19px;left:76px;font-size:.55rem;letter-spacing:.4em;color:rgba(100,200,255,.35);text-transform:uppercase;z-index:5;pointer-events:none}
+.hcrd{position:fixed;bottom:19px;right:76px;font-size:.55rem;letter-spacing:.25em;color:rgba(100,200,255,.28);text-transform:uppercase;z-index:5;pointer-events:none;text-align:right}
+
+.content{position:relative;z-index:2}
+
+/* hero */
+.hero{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8vh;text-align:center}
+.ht{font-size:clamp(2.5rem,9vw,7.5rem);font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#fff;text-shadow:0 0 25px rgba(100,200,255,.9),0 0 70px rgba(100,200,255,.45),0 0 140px rgba(100,200,255,.18);line-height:1.04}
+.hs{margin-top:1.3rem;font-size:clamp(.6rem,1.6vw,.88rem);letter-spacing:.6em;text-transform:uppercase;color:rgba(130,205,255,.5)}
+.hr{margin-top:1.8rem;width:90px;height:1px;background:linear-gradient(to right,transparent,rgba(100,200,255,.5),transparent)}
+.sh{position:absolute;bottom:6vh;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;color:rgba(100,180,255,.35);font-size:.56rem;letter-spacing:.5em;text-transform:uppercase;animation:fy 2.4s ease-in-out infinite}
+.sh::after{content:'';display:block;width:1px;height:40px;background:linear-gradient(to bottom,rgba(100,180,255,.38),transparent)}
+@keyframes fy{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+
+/* social */
+.ss{height:100vh;display:flex;align-items:center;justify-content:center}
+.sc{background:rgba(2,8,20,.92);border:1px solid rgba(100,200,255,.15);border-radius:2px;padding:clamp(2rem,5vw,3.5rem) clamp(2.5rem,8vw,5rem);text-align:center;backdrop-filter:blur(20px);transition:border-color .5s,box-shadow .5s,transform .35s;max-width:520px;width:88%;position:relative}
+.sc::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid currentColor;border-left:2px solid currentColor}
+.sc::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid currentColor;border-right:2px solid currentColor}
+.sc:hover{transform:translateY(-5px)}
+.si{font-size:clamp(1.8rem,4.5vw,2.8rem);margin-bottom:1rem;display:block;filter:drop-shadow(0 0 10px currentColor)}
+.sp{font-size:.58rem;letter-spacing:.6em;text-transform:uppercase;color:rgba(150,215,255,.48);margin-bottom:.5rem}
+.sn{font-size:clamp(1.3rem,3.5vw,2.1rem);font-weight:700;letter-spacing:.05em;color:#fff;margin-bottom:.4rem}
+.sd{font-size:.63rem;letter-spacing:.2em;color:rgba(140,195,255,.38);text-transform:uppercase;margin-bottom:1.8rem}
+.sb{display:inline-block;padding:.7rem 2.1rem;border:1px solid currentColor;border-radius:2px;text-decoration:none;font-size:.66rem;letter-spacing:.4em;text-transform:uppercase;transition:background .28s;font-family:'Courier New',monospace;font-weight:700}
+.sb:hover{background:currentColor}.sb:hover .bt{filter:invert(1) brightness(.1)}.bt{display:inline-block}
+
+#s1 .sc{color:#ff4444;border-color:rgba(255,68,68,.18)}
+#s1 .sc:hover{border-color:rgba(255,68,68,.7);box-shadow:0 0 60px rgba(255,50,50,.18),0 20px 60px rgba(0,0,0,.7)}
+#s1 .sb{color:#ff4444}
+#s2 .sc{color:#e1306c;border-color:rgba(225,48,108,.18)}
+#s2 .sc:hover{border-color:rgba(225,48,108,.7);box-shadow:0 0 60px rgba(225,48,108,.18),0 20px 60px rgba(0,0,0,.7)}
+#s2 .sb{color:#e1306c}
+#s3 .sc{color:#a8d8ff;border-color:rgba(168,216,255,.18)}
+#s3 .sc:hover{border-color:rgba(168,216,255,.7);box-shadow:0 0 60px rgba(100,180,255,.18),0 20px 60px rgba(0,0,0,.7)}
+#s3 .sb{color:#a8d8ff}
+
+footer{height:22vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.8rem}
+.fr{width:160px;height:1px;background:linear-gradient(to right,transparent,rgba(100,200,255,.22),transparent)}
+.ft{font-size:.55rem;letter-spacing:.4em;color:rgba(80,130,180,.28);text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div id="bg">
+  <div class="env on" id="e0"></div>
+  <div class="env" id="e1"></div>
+  <div class="env" id="e2"></div>
+  <div class="env" id="e3"></div>
+  <!--
+  REAL VIDEO BACKGROUNDS — uncomment and add your mp4 files:
+  <video style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6" id="v0" autoplay muted loop playsinline><source src="mountains.mp4"></video>
+  <video style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6" id="v1" autoplay muted loop playsinline><source src="desert.mp4"></video>
+  <video style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6" id="v2" autoplay muted loop playsinline><source src="ocean.mp4"></video>
+  -->
+</div>
+
+<canvas id="c"></canvas>
+<div class="htl"></div><div class="hbr"></div>
+<div class="hlbl">INSOHGRAM · Combat Feed</div>
+<div class="hcrd" id="hcrd">LAT 35.682 · LON 51.421</div>
+
+<div class="content">
+  <section class="hero">
+    <h1 class="ht">ALI<br>SOHI</h1>
+    <p class="hs">Missiles · Fighter Jets · Drones · Defense</p>
+    <div class="hr"></div>
+    <div class="sh">Scroll</div>
+  </section>
+
+  <section class="ss" id="s1">
+    <div class="sc">
+      <span class="si" style="color:#ff4444">▶</span>
+      <div class="sp">YouTube</div>
+      <div class="sn">@Insohgram</div>
+      <div class="sd">Military Content · Analysis · Coverage</div>
+      <a href="https://www.youtube.com/@Insohgram" class="sb" target="_blank" rel="noopener"><span class="bt">Subscribe →</span></a>
+    </div>
+  </section>
+
+  <section class="ss" id="s2">
+    <div class="sc">
+      <span class="si" style="color:#e1306c">◈</span>
+      <div class="sp">Instagram</div>
+      <div class="sn">@insohgram</div>
+      <div class="sd">Photos · Clips · Updates</div>
+      <a href="https://www.instagram.com/insohgram/" class="sb" target="_blank" rel="noopener"><span class="bt">Follow →</span></a>
+    </div>
+  </section>
+
+  <section class="ss" id="s3">
+    <div class="sc">
+      <span class="si" style="color:#a8d8ff;font-style:normal;font-size:2.4rem;font-weight:900">𝕏</span>
+      <div class="sp">X · Twitter</div>
+      <div class="sn">@YOURUSERNAME</div><!-- ← CHANGE -->
+      <div class="sd">Breaking · Intel · Live Updates</div>
+      <a href="https://x.com/YOURUSERNAME" class="sb" target="_blank" rel="noopener"><span class="bt">Follow →</span></a><!-- ← CHANGE URL -->
+    </div>
+  </section>
+
+  <footer>
+    <div class="fr"></div>
+    <div class="ft">© 2026 Ali Sohi · All Rights Reserved</div>
+  </footer>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, CX, CY;
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; CX=W/2; CY=H/2; }
+window.addEventListener('resize', resize); resize();
+
+function rnd(a,b){ return a+Math.random()*(b-a); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+// ── gradient fill helper ──
+function gFill(ctx, x1,y1,x2,y2, stops){
+  const g = ctx.createLinearGradient(x1,y1,x2,y2);
+  stops.forEach(([t,c])=>g.addColorStop(t,c));
+  ctx.fillStyle = g;
+}
+function rFill(ctx, cx,cy,r0,r1, stops){
+  const g = ctx.createRadialGradient(cx,cy,r0,cx,cy,r1);
+  stops.forEach(([t,c])=>g.addColorStop(t,c));
+  ctx.fillStyle = g;
+}
+
+// ════════════════════════════════════════════════════════════
+//  F-22 RAPTOR — metallic multi-pass
+// ════════════════════════════════════════════════════════════
+function f22(ctx, s){
+  // fuselage path
+  const fuse = ()=>{
+    ctx.beginPath();
+    ctx.moveTo(0,-s*2.7);
+    ctx.bezierCurveTo( s*.05,-s*1.9,  s*.22,-s*.9,  s*.24,-s*.05);
+    ctx.lineTo( s*.22, s*1.2); ctx.lineTo( s*.13, s*1.55);
+    ctx.lineTo(-s*.13, s*1.55); ctx.lineTo(-s*.22, s*1.2);
+    ctx.bezierCurveTo(-s*.22,-s*.9, -s*.05,-s*1.9, 0,-s*2.7);
+    ctx.closePath();
+  };
+  // left wing
+  const lwing = ()=>{
+    ctx.beginPath();
+    ctx.moveTo(-s*.22,-s*.65);
+    ctx.bezierCurveTo(-s*.8,-s*.2,-s*1.85,s*.55,-s*2.2,s*1.1);
+    ctx.lineTo(-s*1.75,s*1.28);
+    ctx.bezierCurveTo(-s*1.35,s*1.08,-s*.55,s*.98,-s*.22,s*1.05);
+    ctx.closePath();
+  };
+  const rwing = ()=>{
+    ctx.beginPath();
+    ctx.moveTo(s*.22,-s*.65);
+    ctx.bezierCurveTo(s*.8,-s*.2,s*1.85,s*.55,s*2.2,s*1.1);
+    ctx.lineTo(s*1.75,s*1.28);
+    ctx.bezierCurveTo(s*1.35,s*1.08,s*.55,s*.98,s*.22,s*1.05);
+    ctx.closePath();
+  };
+  const ltail = ()=>{ ctx.beginPath(); ctx.moveTo(-s*.14,s*.9); ctx.lineTo(-s*.65,s*1.65); ctx.lineTo(-s*.18,s*1.6); ctx.closePath(); };
+  const rtail = ()=>{ ctx.beginPath(); ctx.moveTo(s*.14,s*.9);  ctx.lineTo(s*.65,s*1.65);  ctx.lineTo(s*.18,s*1.6);  ctx.closePath(); };
+
+  ctx.save();
+
+  // wings — base
+  gFill(ctx,-s*2.2,-s*.7,s*.22,s*1.3,[[0,'#1a2535'],[.4,'#27384e'],[.75,'#2e4260'],[1,'#1a2a3e']]);
+  lwing(); ctx.fill(); rwing(); ctx.fill();
+  // wings — highlight
+  gFill(ctx,-s*2.2,-s*.7,-s*.22,s*.3,[[0,'rgba(140,190,240,.22)'],[1,'rgba(0,0,0,0)']]);
+  lwing(); ctx.fill();
+  gFill(ctx,s*2.2,-s*.7,s*.22,s*.3,[[0,'rgba(140,190,240,.22)'],[1,'rgba(0,0,0,0)']]);
+  rwing(); ctx.fill();
+  // wings — edge glow
+  ctx.strokeStyle='rgba(80,140,220,.14)'; ctx.lineWidth=1.5;
+  lwing(); ctx.stroke(); rwing(); ctx.stroke();
+
+  // fuselage — base dark stealth
+  gFill(ctx,-s*.3,-s*2.8,s*.25,s*1.6,[[0,'#1c2330'],[.25,'#2e3a4e'],[.55,'#3a4a5e'],[.8,'#283644'],[1,'#151e2a']]);
+  fuse(); ctx.fill();
+  // fuselage — top specular (light from upper-left)
+  gFill(ctx,-s*.18,-s*2.7,s*.06,-s*.3,[[0,'rgba(180,210,255,.30)'],[.5,'rgba(100,160,220,.10)'],[1,'rgba(0,0,0,0)']]);
+  fuse(); ctx.fill();
+  // fuselage — bottom shadow
+  gFill(ctx,0,s*.3,0,s*1.55,[[0,'rgba(0,0,0,0)'],[1,'rgba(0,0,0,.45)']]);
+  fuse(); ctx.fill();
+  // fuselage — edge
+  ctx.strokeStyle='rgba(60,110,180,.2)'; ctx.lineWidth=1;
+  fuse(); ctx.stroke();
+
+  // panel lines
+  ctx.save(); ctx.strokeStyle='rgba(0,0,0,.32)'; ctx.lineWidth=.7;
+  ctx.beginPath(); ctx.moveTo(-s*.22,-s*1.7); ctx.lineTo(-s*.22,s*.95); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo( s*.22,-s*1.7); ctx.lineTo( s*.22,s*.95); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-s*.9,s*.15); ctx.lineTo(-s*.22,s*.65); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo( s*.9,s*.15); ctx.lineTo( s*.22,s*.65); ctx.stroke();
+  // inlet lips
+  ctx.strokeStyle='rgba(40,70,120,.5)'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.ellipse(-s*.16,-s*.85,s*.11,s*.045,.2,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse( s*.16,-s*.85,s*.11,s*.045,-.2,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  // tails
+  gFill(ctx,-s*.65,s*.9,-s*.14,s*1.65,[[0,'#20303e'],[1,'#172030']]);
+  ltail(); ctx.fill(); rtail(); ctx.fill();
+  gFill(ctx,-s*.65,s*.9,-s*.14,s*1.3,[[0,'rgba(120,170,220,.18)'],[1,'rgba(0,0,0,0)']]);
+  ltail(); ctx.fill(); rtail(); ctx.fill();
+
+  // cockpit canopy
+  ctx.save();
+  ctx.beginPath(); ctx.ellipse(0,-s*1.72,s*.1,s*.38,0,0,Math.PI*2);
+  const cg = ctx.createLinearGradient(-s*.1,-s*2.12,s*.06,-s*1.32);
+  cg.addColorStop(0,'rgba(140,210,255,.6)'); cg.addColorStop(.4,'rgba(60,140,220,.38)'); cg.addColorStop(1,'rgba(20,55,120,.42)');
+  ctx.fillStyle=cg; ctx.shadowColor='rgba(100,210,255,.4)'; ctx.shadowBlur=6; ctx.fill();
+  // canopy frame line
+  ctx.strokeStyle='rgba(0,20,50,.7)'; ctx.lineWidth=.7; ctx.stroke();
+  ctx.restore();
+
+  // twin engine nozzles
+  [-s*.19, s*.19].forEach(ex=>{
+    // nozzle ring
+    ctx.beginPath(); ctx.ellipse(ex,s*1.5,s*.13,s*.055,0,0,Math.PI*2);
+    ctx.fillStyle='#080c12'; ctx.fill();
+    ctx.strokeStyle='#3a4a5a'; ctx.lineWidth=1; ctx.stroke();
+    // afterburner core
+    rFill(ctx,ex,s*1.58,0,s*.18,[[0,'rgba(255,230,160,.95)'],[.3,'rgba(255,160,40,.8)'],[.7,'rgba(255,60,10,.35)'],[1,'rgba(0,0,0,0)']]);
+    ctx.beginPath(); ctx.ellipse(ex,s*1.62,s*.18,s*.12,0,0,Math.PI*2); ctx.fill();
+    // exhaust plume
+    rFill(ctx,ex,s*1.9,0,s*.55,[[0,'rgba(255,140,30,.6)'],[.35,'rgba(255,60,5,.28)'],[.7,'rgba(200,20,0,.1)'],[1,'rgba(0,0,0,0)']]);
+    ctx.beginPath(); ctx.ellipse(ex,s*2.1,s*.28,s*.72,0,0,Math.PI*2); ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  AIM-120 AMRAAM — realistic
+// ════════════════════════════════════════════════════════════
+function missile(ctx,s){
+  ctx.save();
+  const body=()=>{
+    ctx.beginPath();
+    ctx.moveTo(0,-s*3.2);
+    ctx.bezierCurveTo(s*.07,-s*2.4,s*.15,-s*1.2,s*.15,s*1.9);
+    ctx.lineTo(-s*.15,s*1.9);
+    ctx.bezierCurveTo(-s*.15,-s*1.2,-s*.07,-s*2.4,0,-s*3.2);
+    ctx.closePath();
+  };
+  gFill(ctx,-s*.2,-s*3.2,s*.2,s*2,[[0,'#24303e'],[.3,'#38485a'],[.65,'#2e3e52'],[1,'#18242e']]);
+  body(); ctx.fill();
+  gFill(ctx,-s*.12,-s*3.2,0,-s*.8,[[0,'rgba(160,200,255,.28)'],[1,'rgba(0,0,0,0)']]);
+  body(); ctx.fill();
+  ctx.strokeStyle='rgba(50,100,180,.2)'; ctx.lineWidth=.8; body(); ctx.stroke();
+
+  // 4 cruciform tail fins
+  [0,Math.PI/2,Math.PI,Math.PI*1.5].forEach(a=>{
+    ctx.save(); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(0,s*.5); ctx.lineTo(s*.85,s*1.9); ctx.lineTo(0,s*1.72); ctx.closePath();
+    ctx.fillStyle='#1e2a3a'; ctx.fill();
+    gFill(ctx,0,s*.5,s*.85,s*1.9,[[0,'rgba(100,150,200,.18)'],[1,'rgba(0,0,0,0)']]);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // seeker dome (radar transparent)
+  ctx.beginPath(); ctx.ellipse(0,-s*3.14,s*.13,s*.19,0,0,Math.PI*2);
+  const dg=ctx.createRadialGradient(-s*.04,-s*3.22,0,0,-s*3.14,s*.15);
+  dg.addColorStop(0,'rgba(140,215,255,.88)'); dg.addColorStop(.55,'rgba(55,120,205,.65)'); dg.addColorStop(1,'rgba(20,55,145,.42)');
+  ctx.fillStyle=dg; ctx.fill();
+
+  // motor plume
+  rFill(ctx,0,s*2.1,0,s*.55,[[0,'rgba(255,195,55,.92)'],[.3,'rgba(255,80,10,.5)'],[.7,'rgba(200,20,0,.15)'],[1,'rgba(0,0,0,0)']]);
+  ctx.beginPath(); ctx.ellipse(0,s*2.35,s*.28,s*.68,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SHAHED-136 — Iranian loitering munition
+// ════════════════════════════════════════════════════════════
+function shahed(ctx,s){
+  ctx.save();
+  const body=()=>{
+    ctx.beginPath();
+    ctx.moveTo(0,-s*1.8);
+    ctx.lineTo(-s*2.65,s*1.85);
+    ctx.lineTo(-s*.26,s*1.12);
+    ctx.lineTo(0,s*2.35);
+    ctx.lineTo(s*.26,s*1.12);
+    ctx.lineTo(s*2.65,s*1.85);
+    ctx.closePath();
+  };
+  // desert camouflage tan
+  gFill(ctx,-s*2.65,-s*1.8,s*2.65,s*2.35,[[0,'#3e2c14'],[.3,'#5e4420'],[.65,'#4e3618'],[1,'#2e200c']]);
+  body(); ctx.fill();
+  gFill(ctx,0,-s*1.8,0,s*.5,[[0,'rgba(210,175,120,.22)'],[1,'rgba(0,0,0,0)']]);
+  body(); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.28)'; ctx.lineWidth=.7; body(); ctx.stroke();
+
+  // panel / rib lines
+  ctx.save(); ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(0,-s*1.8); ctx.lineTo(0,s*2.35); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-s*1.4,s*.55); ctx.lineTo(s*1.4,s*.55); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-s*.7,-s*.4); ctx.lineTo(s*.7,-s*.4); ctx.stroke();
+  ctx.restore();
+
+  // engine pod
+  ctx.beginPath(); ctx.ellipse(0,s*2.22,s*.19,s*.3,0,0,Math.PI*2);
+  gFill(ctx,0,s*1.92,0,s*2.52,[[0,'#1a100a'],[1,'#0a0804']]); ctx.fill();
+  ctx.strokeStyle='rgba(80,50,20,.5)'; ctx.lineWidth=.7; ctx.stroke();
+
+  // prop glow
+  rFill(ctx,0,s*2.45,0,s*.4,[[0,'rgba(255,120,20,.7)'],[.4,'rgba(200,60,10,.3)'],[1,'rgba(0,0,0,0)']]);
+  ctx.beginPath(); ctx.ellipse(0,s*2.52,s*.32,s*.38,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  AIRCRAFT CARRIER — CVN Nimitz class
+// ════════════════════════════════════════════════════════════
+function carrier(ctx, cx, cy, sc){
+  ctx.save(); ctx.translate(cx,cy);
+  const L=sc*3.5, Wh=sc*.42, Ht=sc*.14;
+
+  // hull below waterline
+  const hullPts=[[-L,Ht*2],[-L,-Ht],[L-.6*sc,-Ht],[L+.2*sc,0],[L+.2*sc,Ht*2]];
+  ctx.beginPath(); ctx.moveTo(hullPts[0][0],hullPts[0][1]);
+  hullPts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1])); ctx.closePath();
+  gFill(ctx,-L,0,L,Ht*2,[[0,'#28303a'],[.5,'#1e262e'],[1,'#10181e']]); ctx.fill();
+
+  // waterline
+  ctx.beginPath(); ctx.moveTo(-L,-Ht); ctx.lineTo(L+.2*sc,0);
+  ctx.strokeStyle='rgba(80,150,220,.35)'; ctx.lineWidth=sc*.025; ctx.stroke();
+
+  // flight deck top surface
+  ctx.beginPath();
+  ctx.moveTo(-L,-Ht); ctx.lineTo(-L,-Ht-Wh);
+  ctx.lineTo(L-.55*sc,-Ht-Wh); ctx.lineTo(L+.2*sc,-Ht-Wh*.5);
+  ctx.lineTo(L+.2*sc,-Ht); ctx.closePath();
+  gFill(ctx,-L,-Ht-Wh,L,-Ht,[[0,'#38485a'],[.5,'#2e3e50'],[1,'#263445']]); ctx.fill();
+  ctx.strokeStyle='rgba(50,70,100,.4)'; ctx.lineWidth=.8; ctx.stroke();
+
+  // angled deck (portside)
+  ctx.beginPath();
+  ctx.moveTo(-L*.15,-Ht-Wh);
+  ctx.lineTo(-L*.38,-Ht-Wh*2.2);
+  ctx.lineTo(-L*.04,-Ht-Wh*2.2);
+  ctx.lineTo(L*.08,-Ht-Wh); ctx.closePath();
+  ctx.fillStyle='#2a3848'; ctx.fill();
+  ctx.strokeStyle='rgba(50,70,100,.3)'; ctx.lineWidth=.7; ctx.stroke();
+
+  // deck markings
+  ctx.save(); ctx.strokeStyle='rgba(220,195,110,.45)'; ctx.lineWidth=sc*.022;
+  ctx.beginPath(); ctx.moveTo(-L*.55,-Ht-Wh*.6); ctx.lineTo(L-.6*sc,-Ht-Wh*.55); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-L*.3,-Ht-Wh); ctx.lineTo(-L*.03,-Ht-Wh*2.1); ctx.stroke();
+  ctx.strokeStyle='rgba(255,80,80,.6)'; ctx.lineWidth=sc*.018;
+  ctx.beginPath(); ctx.moveTo(-L*.38,-Ht-Wh*1.8); ctx.lineTo(-L*.04,-Ht-Wh*1.8); ctx.stroke();
+  ctx.restore();
+
+  // island superstructure (starboard)
+  const isX=L*.48, isW=sc*.38, isH=sc*.72;
+  gFill(ctx,isX,isH+Ht+Wh,isX,0,[[0,'#2e3e50'],[1,'#1e2e40']]);
+  ctx.fillRect(isX-isW/2,-Ht-Wh-isH,isW,isH); ctx.fill();
+  // upper island block
+  ctx.fillStyle='#253040';
+  ctx.fillRect(isX-isW*.4,-Ht-Wh-isH*1.32,isW*.8,isH*.35);
+  // mast
+  ctx.strokeStyle='#4a5a6a'; ctx.lineWidth=sc*.02;
+  ctx.beginPath(); ctx.moveTo(isX,-Ht-Wh-isH*1.32); ctx.lineTo(isX,-Ht-Wh-isH*2.2); ctx.stroke();
+  // radar dish
+  ctx.beginPath(); ctx.ellipse(isX,-Ht-Wh-isH*2.2,sc*.13,sc*.045,0,0,Math.PI*2);
+  ctx.fillStyle='#5a6a7a'; ctx.fill();
+  // lights
+  [isX-isW*.3,isX,isX+isW*.3].forEach(lx=>{
+    rFill(ctx,lx,-Ht-Wh-isH*.85,0,sc*.04,[[0,'rgba(255,220,100,.9)'],[1,'rgba(0,0,0,0)']]);
+    ctx.beginPath(); ctx.arc(lx,-Ht-Wh-isH*.85,sc*.04,0,Math.PI*2); ctx.fill();
+  });
+
+  // parked aircraft silhouettes
+  ctx.fillStyle='rgba(45,60,80,.85)';
+  [[-L*.65,-Ht-Wh*.8,sc*.2,sc*.065],[-L*.38,-Ht-Wh*.8,sc*.2,sc*.065],[-L*.12,-Ht-Wh*.8,sc*.2,sc*.065],[L*.12,-Ht-Wh*.78,sc*.18,sc*.06],[-L*.52,-Ht-Wh*1.7,sc*.2,sc*.065],[-L*.28,-Ht-Wh*1.72,sc*.2,sc*.065]].forEach(([px,py,pw,ph])=>{
+    ctx.fillRect(px-pw/2,py-ph/2,pw,ph);
+  });
+
+  // bow wake
+  const wg=ctx.createLinearGradient(L,0,L+sc*2.8,0);
+  wg.addColorStop(0,'rgba(100,170,220,.32)'); wg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=wg;
+  ctx.beginPath(); ctx.moveTo(L+sc*.2,-Ht*.8); ctx.lineTo(L+sc*3.2,-Ht*2.8); ctx.lineTo(L+sc*3.2,Ht*3); ctx.lineTo(L+sc*.2,Ht*.8); ctx.closePath(); ctx.fill();
+
+  // ocean water reflection under carrier
+  rFill(ctx,0,Ht*2.5,0,L*.5,[[0,'rgba(30,80,150,.2)'],[1,'rgba(0,0,0,0)']]);
+  ctx.beginPath(); ctx.ellipse(0,Ht*2.5,L*.5,Ht*1.5,0,0,Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SMOKE + FIRE + EMBERS
+// ════════════════════════════════════════════════════════════
+function mkSmoke(n){ return Array.from({length:n},()=>({
+  x:rnd(-.35,.35), y:rnd(-.25,.28), vx:rnd(-.0007,.0007), vy:rnd(-.0003,-.0009),
+  r:rnd(.055,.17), a:rnd(.25,.65), gray:rnd(.14,.44), life:Math.random(),
+  lifeSpd:rnd(.0003,.0007), phase:Math.random()*Math.PI*2
+}));}
+function mkFire(n){ return Array.from({length:n},()=>({
+  x:rnd(-.12,.12), y:rnd(-.03,.15), vx:rnd(-.0003,.0003), vy:rnd(-.0008,-.0028),
+  r:rnd(.009,.026), life:Math.random(), lifeSpd:rnd(.004,.013), hue:rnd(0,32)
+}));}
+function mkEmber(n){ return Array.from({length:n},()=>({
+  x:rnd(-.14,.14), y:rnd(-.08,.12), vx:rnd(-.0014,.0014), vy:rnd(-.002,-.005),
+  r:rnd(.002,.006), life:Math.random(), lifeSpd:rnd(.003,.009)
+}));}
+
+const smokeP=mkSmoke(50), fireP=mkFire(65), emberP=mkEmber(38);
+let smokeLevel=0.9;
+
+function drawFX(dt, sp){
+  const targetSmoke = Math.max(.12, .92 - sp*0.85);
+  smokeLevel = smokeLevel + (targetSmoke - smokeLevel)*.012*dt;
+
+  // ─ smoke ─
+  ctx.save(); ctx.filter='blur(24px)';
+  for(const p of smokeP){
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.life+=p.lifeSpd*dt;
+    if(p.life>1||Math.abs(p.x)>.7||Math.abs(p.y)>.7){
+      Object.assign(p,{x:rnd(-.28,.28),y:rnd(-.12,.2),life:0,vx:rnd(-.0007,.0007),vy:rnd(-.0003,-.0008),r:rnd(.055,.17),a:rnd(.25,.65),gray:rnd(.14,.44)});
+    }
+    const fade=Math.sin(p.life*Math.PI);
+    const px=CX+p.x*W, py=CY+p.y*H, pr=p.r*W;
+    const lv=Math.round(p.gray*255);
+    rFill(ctx,px,py,0,pr,[[0,`rgba(${lv},${lv},${lv+18},${p.a*fade*smokeLevel})`],[.5,`rgba(${lv},${lv},${lv+12},${p.a*.38*fade*smokeLevel})`],[1,'rgba(0,0,0,0)']]);
+    ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.fill();
+  }
+  ctx.filter='none'; ctx.restore();
+
+  // ─ fire ─
+  const fireOn=smokeLevel>.18;
+  ctx.save(); ctx.filter='blur(5px)';
+  for(const p of fireP){
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.life+=p.lifeSpd*dt;
+    if(p.life>1){ Object.assign(p,{x:rnd(-.1,.1),y:rnd(.0,.12),life:0,vx:rnd(-.0003,.0003),vy:rnd(-.0009,-.003),r:rnd(.009,.026),hue:rnd(0,32)}); }
+    if(!fireOn) continue;
+    const fade=Math.sin(p.life*Math.PI);
+    const px=CX+p.x*W, py=CY+p.y*H, pr=p.r*W;
+    rFill(ctx,px,py,0,pr,[[0,`hsla(${p.hue+22},100%,90%,${.9*fade*smokeLevel})`],[.3,`hsla(${p.hue},100%,58%,${.7*fade*smokeLevel})`],[.7,`hsla(${p.hue-12},90%,32%,${.28*fade*smokeLevel})`],[1,'rgba(0,0,0,0)']]);
+    ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.fill();
+  }
+  ctx.filter='none'; ctx.restore();
+
+  // ─ embers ─
+  for(const p of emberP){
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.life+=p.lifeSpd*dt;
+    if(p.life>1){ Object.assign(p,{x:rnd(-.12,.12),y:rnd(-.06,.14),life:0}); }
+    if(!fireOn) continue;
+    const fade=Math.sin(p.life*Math.PI);
+    ctx.beginPath(); ctx.arc(CX+p.x*W,CY+p.y*H,p.r*W,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,${Math.floor(80+Math.random()*140)},15,${.88*fade*smokeLevel})`; ctx.fill();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  LENS FLARE
+// ════════════════════════════════════════════════════════════
+function lensFlare(x,y,int,r,g,b){
+  rFill(ctx,x,y,0,90*int,[[0,`rgba(${r},${g},${b},${.88*int})`],[.3,`rgba(${r},${g},${b},${.3*int})`],[1,'rgba(0,0,0,0)']]);
+  ctx.beginPath(); ctx.arc(x,y,90*int,0,Math.PI*2); ctx.fill();
+  ctx.save(); ctx.globalAlpha=.35*int;
+  for(let i=0;i<6;i++){
+    const ang=i/6*Math.PI*2+tick*.008;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(ang)*130*int,y+Math.sin(ang)*130*int);
+    ctx.strokeStyle=`rgba(${r},${g},${b},.55)`; ctx.lineWidth=1; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  POST FX — vignette + grain + color grade
+// ════════════════════════════════════════════════════════════
+function postFX(sp){
+  // teal/warm color grade tint
+  const warmMix = Math.max(0, Math.min(1,(sp*4-1)));  // desert warmth section 1
+  const tealMix = Math.max(0, Math.min(1,(sp*4-2)));  // ocean teal section 2
+  if(warmMix>0){ ctx.fillStyle=`rgba(80,30,0,${warmMix*.06})`; ctx.fillRect(0,0,W,H); }
+  if(tealMix>0){ ctx.fillStyle=`rgba(0,30,80,${tealMix*.06})`; ctx.fillRect(0,0,W,H); }
+
+  // vignette
+  rFill(ctx,CX,CY,0,Math.max(W,H)*.76,[[0,'rgba(0,0,0,0)'],[.62,'rgba(0,0,0,.1)'],[1,'rgba(0,0,0,.72)']]);
+  ctx.fillRect(0,0,W,H);
+
+  // film grain
+  ctx.save(); ctx.globalAlpha=.025;
+  for(let i=0;i<700;i++){
+    ctx.beginPath(); ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.1,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${Math.random()})`; ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+//  ENVIRONMENT / TERRAIN per section
+// ════════════════════════════════════════════════════════════
+let mtnPts=[], dunePts=[], starPts=[];
+function buildGeo(){
+  // mountains (layered sin waves)
+  function makeMtn(segs,seed,peakF,valF){
+    const r=[{x:-10,y:H*valF}];
+    for(let i=0;i<=segs;i++){
+      const t=i/segs, x=t*(W+20)-10;
+      const h=Math.sin(t*4.1+seed)*.38+Math.sin(t*7.9+seed*2)*.22+Math.sin(t*13.2+seed*3)*.12+Math.sin(t*22+seed*.7)*.06;
+      r.push({x,y:H*valF-(h+1)/2*H*(valF-peakF)});
+    }
+    r.push({x:W+10,y:H*valF}); return r;
+  }
+  mtnPts=[makeMtn(28,1.1,.34,.62),makeMtn(22,2.7,.40,.66),makeMtn(16,4.3,.48,.70)];
+
+  // desert dunes
+  dunePts=[{x:-10,y:H*.74}];
+  for(let i=0;i<=22;i++){
+    const t=i/22;
+    dunePts.push({x:t*(W+20)-10, y:H*.74-(Math.sin(t*6.4+.9)*.5+.5)*H*.065});
+  }
+  dunePts.push({x:W+10,y:H*.74});
+
+  // stars
+  starPts=Array.from({length:250},()=>({x:Math.random()*W,y:Math.random()*H*.65,r:Math.random()*1.3+.3,a:Math.random()*.7+.15,tw:Math.random()*Math.PI*2}));
+}
+window.addEventListener('resize',buildGeo); buildGeo();
+
+function drawMtn(pts,color,alpha){
+  if(!pts.length) return;
+  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length-1;i++){
+    const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+    ctx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+  }
+  ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  ctx.lineTo(W+10,H); ctx.lineTo(-10,H); ctx.closePath();
+  ctx.globalAlpha=alpha; ctx.fillStyle=color; ctx.fill(); ctx.globalAlpha=1;
+}
+
+function drawEnvironment(sp){
+  // blend between 4 environments based on scroll
+  const env=sp*4;
+  const sec=Math.min(3,Math.floor(env));
+  const frac=env-sec;
+
+  // ─ SECTION 0: Mountains ─
+  if(sec===0){
+    // stars fading in at top
+    for(const s of starPts){
+      const tw=.6+Math.sin(tick*.04+s.tw)*.4;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,215,255,${s.a*tw*(1-frac*.6)})`; ctx.fill();
+    }
+    // mountains
+    ctx.save();
+    // snow cap glow on far peaks
+    const snowG=ctx.createLinearGradient(0,H*.3,0,H*.52);
+    snowG.addColorStop(0,'rgba(180,210,255,.18)'); snowG.addColorStop(1,'rgba(0,0,0,0)');
+    drawMtn(mtnPts[0],'#16273a',.52); ctx.fillStyle=snowG; drawMtn(mtnPts[0],snowG,1);
+    drawMtn(mtnPts[1],'#0e1c2e',.72);
+    drawMtn(mtnPts[2],'#08121e',.92);
+    ctx.restore();
+  }
+
+  // ─ SECTION 1: Desert ─
+  if(sec===1){
+    // desert sand foreground
+    if(dunePts.length>1){
+      ctx.beginPath(); ctx.moveTo(dunePts[0].x,dunePts[0].y);
+      for(let i=1;i<dunePts.length-1;i++){
+        const mx=(dunePts[i].x+dunePts[i+1].x)/2, my=(dunePts[i].y+dunePts[i+1].y)/2;
+        ctx.quadraticCurveTo(dunePts[i].x,dunePts[i].y,mx,my);
+      }
+      ctx.lineTo(W+10,dunePts[dunePts.length-1].y); ctx.lineTo(W+10,H); ctx.lineTo(-10,H); ctx.closePath();
+      const dg=ctx.createLinearGradient(0,H*.7,0,H);
+      dg.addColorStop(0,'#6a5028'); dg.addColorStop(.35,'#5a4020'); dg.addColorStop(1,'#2e2010');
+      ctx.fillStyle=dg; ctx.fill();
+      // dune ridge highlight
+      ctx.beginPath(); ctx.moveTo(dunePts[0].x,dunePts[0].y);
+      for(let i=1;i<dunePts.length-1;i++){
+        const mx=(dunePts[i].x+dunePts[i+1].x)/2, my=(dunePts[i].y+dunePts[i+1].y)/2;
+        ctx.quadraticCurveTo(dunePts[i].x,dunePts[i].y,mx,my);
+      }
+      ctx.strokeStyle='rgba(200,155,70,.2)'; ctx.lineWidth=2; ctx.stroke();
+    }
+    // heat haze horizon
+    const hg=ctx.createLinearGradient(0,H*.65,0,H*.75);
+    hg.addColorStop(0,'rgba(0,0,0,0)'); hg.addColorStop(.5,'rgba(90,45,10,.18)'); hg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=hg; ctx.fillRect(0,H*.65,W,H*.1);
+  }
+
+  // ─ SECTION 2: Ocean ─
+  if(sec===2){
+    const oceanTop=H*.62;
+    // ocean body
+    const og=ctx.createLinearGradient(0,oceanTop,0,H);
+    og.addColorStop(0,'#0a2244'); og.addColorStop(.45,'#0e2e58'); og.addColorStop(1,'#06152a');
+    ctx.fillStyle=og;
+    ctx.beginPath(); ctx.moveTo(0,oceanTop);
+    ctx.bezierCurveTo(W*.3,oceanTop-10,W*.7,oceanTop+8,W,oceanTop+14);
+    ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill();
+    // wave shimmer
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(0,oceanTop);
+    ctx.bezierCurveTo(W*.3,oceanTop-10,W*.7,oceanTop+8,W,oceanTop+14);
+    ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.clip();
+    for(let w=0;w<14;w++){
+      const wy=oceanTop+((tick*(1.1+w*.14)+w*40)%(H-oceanTop+60));
+      ctx.beginPath(); ctx.moveTo(0,wy); ctx.bezierCurveTo(W*.28,wy-4,W*.65,wy+5,W,wy+2);
+      ctx.strokeStyle=`rgba(100,185,255,${.03+w%3===0?.04:0})`; ctx.lineWidth=1; ctx.stroke();
+    }
+    // surface highlight
+    const sg=ctx.createLinearGradient(0,oceanTop-3,0,oceanTop+35);
+    sg.addColorStop(0,'rgba(70,150,255,.22)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=sg; ctx.fillRect(0,oceanTop-5,W,42);
+    ctx.restore();
+    // moonlight on water
+    const mlg=ctx.createRadialGradient(CX,oceanTop,0,CX,oceanTop,W*.4);
+    mlg.addColorStop(0,'rgba(180,220,255,.12)'); mlg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=mlg; ctx.fillRect(0,oceanTop,W,H-oceanTop);
+  }
+
+  // ─ SECTION 3: Night / Stars ─
+  if(sec===3){
+    for(const s of starPts){
+      const tw=.55+Math.sin(tick*.04+s.tw)*.45;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,215,255,${s.a*tw})`; ctx.fill();
+    }
+    // nebula-like glow
+    rFill(ctx,CX*.4,H*.2,0,W*.35,[[0,'rgba(20,10,60,.18)'],[1,'rgba(0,0,0,0)']]);
+    ctx.fillRect(0,0,W,H);
+    rFill(ctx,CX*1.5,H*.35,0,W*.3,[[0,'rgba(0,30,60,.15)'],[1,'rgba(0,0,0,0)']]);
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  ENVIRONMENT TRANSITION (CSS fallback divs)
+// ════════════════════════════════════════════════════════════
+const envDivs=['e0','e1','e2','e3'].map(id=>document.getElementById(id));
+let curEnv=0;
+function setEnv(i){ if(i===curEnv) return; envDivs[curEnv].classList.remove('on'); envDivs[i].classList.add('on'); curEnv=i; }
+
+// ════════════════════════════════════════════════════════════
+//  SCROLL STATE
+// ════════════════════════════════════════════════════════════
+let scrollP=0, tick=0;
+
+window.addEventListener('scroll',()=>{
+  const maxY=document.body.scrollHeight-window.innerHeight;
+  scrollP=maxY>0?window.scrollY/maxY:0;
+  const envIdx=Math.min(3,Math.floor(scrollP*4));
+  setEnv(envIdx);
+  const lat=(35.682+scrollP*9).toFixed(3), lon=(51.421+scrollP*14).toFixed(3);
+  document.getElementById('hcrd').textContent=`LAT ${lat} · LON ${lon}`;
+},{passive:true});
+
+// ════════════════════════════════════════════════════════════
+//  AIRCRAFT SCENE — positions that emerge from smoke on scroll
+// ════════════════════════════════════════════════════════════
+// Each object: startReveal = global scroll 0..1 at which it begins fading in
+const OBJ = {
+  f22a:    { startReveal:.0,  x:-.19, y:-.08, ang: .18,  sc:1.0  },
+  f22b:    { startReveal:.04, x: .16, y:-.14, ang:-.12,  sc:.86  },
+  msile:   { startReveal:.07, x: .01, y: .06, ang: .16,  sc:.55  },
+  shd:     { startReveal:.10, x: .09, y: .16, ang:-.1,   sc:.58  },
+};
+// carrier appears only in ocean section (sp > .5)
+function objAlpha(o){ return Math.min(1,Math.max(0,(scrollP-o.startReveal)/.14)); }
+
+// ════════════════════════════════════════════════════════════
+//  MAIN RENDER LOOP
+// ════════════════════════════════════════════════════════════
+let lastTs=0;
+function animate(ts){
+  const dt=Math.min((ts-lastTs)/16.67,3); lastTs=ts; tick+=dt;
+  ctx.clearRect(0,0,W,H);
+
+  // terrain / environment
+  drawEnvironment(scrollP);
+
+  // smoke + fire (behind aircraft)
+  drawFX(dt, scrollP);
+
+  // carrier (ocean section)
+  const carrA=Math.max(0,Math.min(1,(scrollP-.5)/.14));
+  if(carrA>0){
+    ctx.save(); ctx.globalAlpha=carrA;
+    const csc=Math.min(W,H)*.15;
+    carrier(ctx, CX+W*.06, CY+H*.34, csc);
+    ctx.restore();
+  }
+
+  // F-22 Alpha
+  const aA=objAlpha(OBJ.f22a);
+  if(aA>0){
+    const sz=Math.min(W,H)*.125;
+    const px=CX+OBJ.f22a.x*W, py=CY+OBJ.f22a.y*H;
+    ctx.save(); ctx.globalAlpha=aA;
+    ctx.shadowColor='rgba(180,220,255,.45)'; ctx.shadowBlur=22;
+    ctx.translate(px,py); ctx.rotate(OBJ.f22a.ang+Math.sin(tick*.017)*.014);
+    f22(ctx,sz); ctx.restore();
+    ctx.save(); ctx.globalAlpha=aA*.72;
+    lensFlare(px+Math.cos(OBJ.f22a.ang+Math.PI*.55)*sz*1.25, py+Math.sin(OBJ.f22a.ang+Math.PI*.55)*sz*1.25, .65,255,150,35);
+    ctx.restore();
+  }
+
+  // F-22 Bravo
+  const aB=objAlpha(OBJ.f22b);
+  if(aB>0){
+    const sz=Math.min(W,H)*.125*OBJ.f22b.sc;
+    const px=CX+OBJ.f22b.x*W, py=CY+OBJ.f22b.y*H;
+    ctx.save(); ctx.globalAlpha=aB;
+    ctx.shadowColor='rgba(180,220,255,.38)'; ctx.shadowBlur=18;
+    ctx.translate(px,py); ctx.rotate(OBJ.f22b.ang+Math.sin(tick*.021+1.4)*.013);
+    f22(ctx,sz); ctx.restore();
+    ctx.save(); ctx.globalAlpha=aB*.62;
+    lensFlare(px+Math.cos(OBJ.f22b.ang+Math.PI*.55)*sz*1.25, py+Math.sin(OBJ.f22b.ang+Math.PI*.55)*sz*1.25, .55,255,130,28);
+    ctx.restore();
+  }
+
+  // Missile
+  const aM=objAlpha(OBJ.msile);
+  if(aM>0){
+    const sz=Math.min(W,H)*.068*OBJ.msile.sc;
+    ctx.save(); ctx.globalAlpha=aM;
+    ctx.shadowColor='rgba(255,140,40,.55)'; ctx.shadowBlur=14;
+    ctx.translate(CX+OBJ.msile.x*W,CY+OBJ.msile.y*H);
+    ctx.rotate(OBJ.msile.ang+Math.sin(tick*.028)*.008);
+    missile(ctx,sz); ctx.restore();
+  }
+
+  // Shahed
+  const aS=objAlpha(OBJ.shd);
+  if(aS>0){
+    const sz=Math.min(W,H)*.085*OBJ.shd.sc;
+    ctx.save(); ctx.globalAlpha=aS;
+    ctx.shadowColor='rgba(160,120,60,.4)'; ctx.shadowBlur=12;
+    ctx.translate(CX+OBJ.shd.x*W,CY+OBJ.shd.y*H);
+    ctx.rotate(OBJ.shd.ang+Math.sin(tick*.024+2.8)*.01);
+    shahed(ctx,sz); ctx.restore();
+  }
+
+  // foreground smoke wisps over aircraft
+  ctx.save(); ctx.filter='blur(18px)'; ctx.globalAlpha=smokeLevel*.38;
+  const fg=ctx.createRadialGradient(CX,CY,0,CX,CY,W*.22);
+  fg.addColorStop(0,'rgba(80,80,90,.55)'); fg.addColorStop(.5,'rgba(50,50,60,.22)'); fg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=fg; ctx.beginPath(); ctx.arc(CX,CY,W*.22,0,Math.PI*2); ctx.fill();
+  ctx.filter='none'; ctx.restore();
+
+  postFX(scrollP);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
